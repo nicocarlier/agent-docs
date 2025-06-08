@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { CreateDocumentRequest } from '@/types/document';
-import { DocumentService } from '@/services/documentService';
+import { CreateDocumentRequest } from '../types/document';
+import { DocumentService } from '../services/documentService';
 
 interface CreateDocumentFormProps {
   onDocumentCreated?: () => void;

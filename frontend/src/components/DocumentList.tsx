@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Document } from '@/types/document';
-import { DocumentService } from '@/services/documentService';
+import { DocumentService } from '../services/documentService';
+import { AgentDocument } from '../types/document';
 
 export default function DocumentList() {
-  const [documents, setDocuments] = useState<Document[]>([]);
+  const [documents, setDocuments] = useState<AgentDocument[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

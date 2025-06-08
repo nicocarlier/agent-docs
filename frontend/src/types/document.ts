@@ -1,5 +1,5 @@
-export interface Document {
-  id?: number;
+export interface AgentDocument {
+  id?: string;
   title: string;
   content: string;
   created_at?: string;
@@ -11,5 +11,5 @@ export interface CreateDocumentRequest {
 }
 
 export interface DocumentListResponse {
-  documents: Document[];
+  documents: AgentDocument[];
 } 

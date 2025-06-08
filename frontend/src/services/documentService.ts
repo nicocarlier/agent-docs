@@ -1,8 +1,8 @@
-import { Document, CreateDocumentRequest } from '@/types/document';
-import { API_BASE_URL } from '@/constants/api';
+import { API_BASE_URL } from "../constants";
+import { AgentDocument, CreateDocumentRequest } from "../types/document";
 
 export class DocumentService {
-  static async createDocument(data: CreateDocumentRequest): Promise<Document> {
+  static async createDocument(data: CreateDocumentRequest): Promise<AgentDocument> {
     const response = await fetch(`${API_BASE_URL}/api/documents/`, {
       method: 'POST',
       headers: {
@@ -18,7 +18,7 @@ export class DocumentService {
     return response.json();
   }
 
-  static async getDocuments(): Promise<Document[]> {
+  static async getDocuments(): Promise<AgentDocument[]> {
     const response = await fetch(`${API_BASE_URL}/api/documents/`);
 
     if (!response.ok) {
@@ -28,7 +28,7 @@ export class DocumentService {
     return response.json();
   }
 
-  static async getDocument(id: number): Promise<Document> {
+  static async getDocument(id: string): Promise<AgentDocument> {
     const response = await fetch(`${API_BASE_URL}/api/documents/${id}`);
 
     if (!response.ok) {

@@ -4,5 +4,5 @@ export const API_BASE_URL = process.env.NODE_ENV === 'production'
 
 export const API_ENDPOINTS = {
   DOCUMENTS: '/api/documents',
-  DOCUMENT_BY_ID: (id: number) => `/api/documents/${id}`,
+  DOCUMENT_BY_ID: (id: string) => `/api/documents/${id}`,
 } as const; 
