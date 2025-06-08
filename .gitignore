@@ -1,7 +1,17 @@
-node_modules
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.DS_Store
 
+# Node
+node_modules/
+.next/
+
+# Vercel & Env
+.vercel/
+.env
 .env.local
 
-.env
-
-.next
+# Editor
+.vscode/
