@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@heroui/react";
 import { DocumentService } from "../../../src/services/documentService";
 import { AgentDocument } from "../../../src/types/document";
+import { useAuthToken } from "@/src/hooks/useAuth";
 
 export default function DocumentLayout({
   children,
@@ -16,12 +17,14 @@ export default function DocumentLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const params = useParams();
+  const { getAuthToken } = useAuthToken();
   const currentDocumentId = params.id as string;
 
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
-        const docs = await DocumentService.getDocuments();
+        const token = await getAuthToken();
+        const docs = await DocumentService.getDocuments(token);
         setDocuments(docs);
       } catch (error) {
         console.error("Failed to fetch documents:", error);
@@ -31,19 +34,23 @@ export default function DocumentLayout({
     };
 
     fetchDocuments();
-  }, []);
+  }, [getAuthToken]);
 
   const handleCreateDocument = async () => {
     try {
-      const newDoc = await DocumentService.createDocument({
-        title: "New Document",
-        content: "",
-      });
+      const token = await getAuthToken();
+      const newDoc = await DocumentService.createDocument(
+        {
+          title: "New Document",
+          content: "",
+        },
+        token,
+      );
 
       if (newDoc.id) {
         router.push(`/document/${newDoc.id}`);
         // Refresh the document list
-        const docs = await DocumentService.getDocuments();
+        const docs = await DocumentService.getDocuments(token);
         setDocuments(docs);
       }
     } catch (error) {
@@ -83,7 +90,7 @@ export default function DocumentLayout({
           <Button
             color="primary"
             onPress={handleCreateDocument}
-            className="w-full bg-dark-green !text-black hover:bg-primary"
+            className="w-full bg-dark-green text-white hover:bg-primary"
             size={sidebarOpen ? "md" : "sm"}
           >
             {sidebarOpen ? "Create Document" : "+"}

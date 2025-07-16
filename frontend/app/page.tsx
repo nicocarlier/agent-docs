@@ -4,54 +4,194 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DocumentService } from "../src/services/documentService";
 import { Button, Spinner } from "@heroui/react";
-import { SignedIn, SignedOut } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
 import { AgentDocument } from "../src/types/document";
+import { useAuthToken } from "../src/hooks/useAuth";
 
-function WelcomePage() {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleCreateDocument = async () => {
-    setLoading(true);
-    try {
-      const newDoc = await DocumentService.createDocument({
-        title: "New Document",
-        content: "Start writing your document here...",
-      });
-
-      if (newDoc.id) {
-        router.push(`/document/${newDoc.id}`);
-      }
-    } catch (error) {
-      console.error("Failed to create document:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+function LandingPage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-cream text-dark-green">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <div className="text-center sm:text-left">
-          <h1 className="text-4xl font-bold text-dark-green mb-4">
-            Welcome to Agent Docs
+    <div className="min-h-screen bg-cream text-dark-green">
+      {/* Header */}
+      <header className="border-b border-gray-200 px-6 py-4">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-dark-green rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">AD</span>
+            </div>
+            <span className="text-xl font-bold text-dark-green">
+              Agent Docs
+            </span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <SignInButton mode="modal">
+              <Button
+                variant="light"
+                className="text-dark-green hover:bg-light-green"
+              >
+                Sign In
+              </Button>
+            </SignInButton>
+            <SignUpButton mode="modal">
+              <Button
+                color="primary"
+                className="bg-dark-green text-white hover:bg-primary"
+              >
+                Get Started
+              </Button>
+            </SignUpButton>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="px-6 py-20">
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-bold text-dark-green mb-6">
+            Collaborative Document Editing
+            <span className="block text-3xl md:text-4xl font-normal text-gray-600 mt-2">
+              Built for Teams
+            </span>
           </h1>
-          <p className="text-lg text-gray-600 mb-8">
+          <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Create, edit, and collaborate on documents in real-time with your
-            team.
+            team. Experience seamless collaboration with our powerful editor
+            powered by TipTap.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <SignUpButton mode="modal">
+              <Button
+                color="primary"
+                size="lg"
+                className="bg-dark-green text-white hover:bg-primary px-8 py-4 text-lg"
+              >
+                Start Writing Today
+              </Button>
+            </SignUpButton>
+            <SignInButton mode="modal">
+              <Button
+                variant="bordered"
+                size="lg"
+                className="border-dark-green text-dark-green hover:bg-light-green px-8 py-4 text-lg"
+              >
+                Sign In
+              </Button>
+            </SignInButton>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="px-6 py-20 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl font-bold text-dark-green text-center mb-12">
+            Why Choose Agent Docs?
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-dark-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-dark-green mb-2">
+                Real-time Collaboration
+              </h3>
+              <p className="text-gray-600">
+                Work together with your team in real-time. See changes as they
+                happen with live cursors and instant updates.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-dark-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-dark-green mb-2">
+                Rich Text Editing
+              </h3>
+              <p className="text-gray-600">
+                Powerful editor with formatting options, lists, headings, and
+                more. Create professional documents with ease.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-light-green rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg
+                  className="w-8 h-8 text-dark-green"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-dark-green mb-2">
+                Secure & Private
+              </h3>
+              <p className="text-gray-600">
+                Your documents are secure and private. Built with modern
+                authentication and data protection.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="px-6 py-20 bg-light-green">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-dark-green mb-4">
+            Ready to Get Started?
+          </h2>
+          <p className="text-lg text-gray-600 mb-8">
+            Join thousands of teams who are already collaborating on Agent Docs.
+          </p>
+          <SignUpButton mode="modal">
+            <Button
+              color="primary"
+              size="lg"
+              className="bg-dark-green text-white hover:bg-primary px-8 py-4 text-lg"
+            >
+              Create Your First Document
+            </Button>
+          </SignUpButton>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 px-6 py-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <p className="text-gray-600">
+            © 2024 Agent Docs. Built with Next.js, FastAPI, and TipTap.
           </p>
         </div>
-
-        <Button
-          color="primary"
-          onPress={handleCreateDocument}
-          isLoading={loading}
-          spinner={<Spinner size="sm" />}
-          className="cursor-pointer bg-dark-green text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Create Your First Document
-        </Button>
-      </main>
+      </footer>
     </div>
   );
 }
@@ -61,10 +201,12 @@ function DocumentList() {
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
   const router = useRouter();
+  const { getAuthToken } = useAuthToken();
 
   const fetchDocuments = async () => {
     try {
-      const docs = await DocumentService.getDocuments();
+      const token = await getAuthToken();
+      const docs = await DocumentService.getDocuments(token);
       setDocuments(docs);
     } catch (error) {
       console.error("Failed to fetch documents:", error);
@@ -76,10 +218,14 @@ function DocumentList() {
   const handleCreateDocument = async () => {
     setCreating(true);
     try {
-      const newDoc = await DocumentService.createDocument({
-        title: "New Document",
-        content: "Start writing your document here...",
-      });
+      const token = await getAuthToken();
+      const newDoc = await DocumentService.createDocument(
+        {
+          title: "New Document",
+          content: "Start writing your document here...",
+        },
+        token,
+      );
 
       if (newDoc.id) {
         router.push(`/document/${newDoc.id}`);
@@ -110,7 +256,7 @@ function DocumentList() {
             onPress={handleCreateDocument}
             isLoading={creating}
             spinner={<Spinner size="sm" />}
-            className="bg-dark-green text-black hover:bg-primary"
+            className="bg-dark-green text-white hover:bg-primary"
           >
             Create Document
           </Button>
@@ -172,7 +318,7 @@ export default function Home() {
   return (
     <>
       <SignedOut>
-        <WelcomePage />
+        <LandingPage />
       </SignedOut>
       <SignedIn>
         <DocumentList />

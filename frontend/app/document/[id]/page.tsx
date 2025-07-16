@@ -9,6 +9,7 @@ import { AgentDocument } from "../../../src/types/document";
 import EditorWrapper from "@/src/components/Editor/EditorWrapper";
 import { useTiptapEditor } from "@/src/hooks/useTiptapEditor";
 import MenuBar from "@/src/components/Editor/MenuBar";
+import { useAuthToken } from "@/src/hooks/useAuth";
 
 export default function DocumentPage() {
   const [document, setDocument] = useState<AgentDocument | null>(null);
@@ -18,6 +19,7 @@ export default function DocumentPage() {
   const [saving, setSaving] = useState(false);
   const params = useParams();
   const router = useRouter();
+  const { getAuthToken } = useAuthToken();
   const documentId = params.id as string;
   const editor = useTiptapEditor({
     documentId,
@@ -33,7 +35,8 @@ export default function DocumentPage() {
       }
 
       try {
-        const data = await DocumentService.getDocument(documentId);
+        const token = await getAuthToken();
+        const data = await DocumentService.getDocument(documentId, token);
         setDocument(data);
         setTitle(data.title);
 
@@ -51,7 +54,7 @@ export default function DocumentPage() {
     };
 
     fetchDocument();
-  }, [documentId, editor]);
+  }, [documentId, editor, getAuthToken]);
 
   // Update editor content when document is loaded
   useEffect(() => {
@@ -69,10 +72,15 @@ export default function DocumentPage() {
 
     setSaving(true);
     try {
-      await DocumentService.updateDocument(document.id, {
-        title,
-        content: document.content, // Keep existing content from database
-      });
+      const token = await getAuthToken();
+      await DocumentService.updateDocument(
+        document.id,
+        {
+          title,
+          content: document.content, // Keep existing content from database
+        },
+        token,
+      );
 
       // Update local document state
       setDocument({
@@ -84,7 +92,7 @@ export default function DocumentPage() {
     } finally {
       setSaving(false);
     }
-  }, [document, title]);
+  }, [document, title, getAuthToken]);
 
   // Save title when it changes (debounced)
   useEffect(() => {
