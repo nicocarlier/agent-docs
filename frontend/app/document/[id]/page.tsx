@@ -95,7 +95,7 @@ export default function DocumentPage() {
     }, 1000); // Save title after 1 second of inactivity
 
     return () => clearTimeout(timeoutId);
-  }, [title, handleTitleSave]);
+  }, [title, handleTitleSave, document]);
 
   if (loading) {
     return (

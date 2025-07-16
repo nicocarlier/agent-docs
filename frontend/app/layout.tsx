@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Link from "next/link";
 import Providers from "./providers";
 import "./styles/globals.css";
 
@@ -31,7 +32,7 @@ export default function RootLayout({
             {/* Top Navbar */}
             <nav className="bg-white border-b border-gray-200 px-6 py-3 flex-shrink-0">
               <div className="flex items-center justify-between">
-                <a
+                <Link
                   href="/"
                   className="flex items-center space-x-2 text-dark-green hover:text-primary transition-colors"
                 >
@@ -39,7 +40,7 @@ export default function RootLayout({
                     <span className="text-white font-bold text-sm">AD</span>
                   </div>
                   <span className="font-bold text-lg">Agent Docs</span>
-                </a>
+                </Link>
               </div>
             </nav>
 
