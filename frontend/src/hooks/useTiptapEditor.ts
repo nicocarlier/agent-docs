@@ -47,7 +47,7 @@ export const useTiptapEditor = ({
           ]
         : [],
     ].flat(),
-    content: DEFAULT_EDITOR_CONTENT,
+    content: documentId ? undefined : DEFAULT_EDITOR_CONTENT, // Only use default content if no documentId (collaboration)
     editable: true,
     autofocus: true,
     immediatelyRender: false,

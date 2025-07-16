@@ -64,58 +64,38 @@ export default function DocumentPage() {
     setTitle(value);
   };
 
-  const handleSave = useCallback(async () => {
-    if (!document || !editor || !document.id) return;
+  const handleTitleSave = useCallback(async () => {
+    if (!document || !document.id || title === document.title) return;
 
     setSaving(true);
     try {
-      const content = editor.getHTML();
       await DocumentService.updateDocument(document.id, {
         title,
-        content,
+        content: document.content, // Keep existing content from database
       });
 
       // Update local document state
       setDocument({
         ...document,
         title,
-        content,
       });
     } catch (err) {
-      console.error("Failed to save document:", err);
-      // You might want to show a toast notification here
+      console.error("Failed to save title:", err);
     } finally {
       setSaving(false);
     }
-  }, [document, editor, title]);
+  }, [document, title]);
 
-  // Auto-save on content change (debounced)
+  // Save title when it changes (debounced)
   useEffect(() => {
-    if (!editor || !document) return;
+    if (!document) return;
 
     const timeoutId = setTimeout(() => {
-      handleSave();
-    }, 2000); // Save after 2 seconds of inactivity
+      handleTitleSave();
+    }, 1000); // Save title after 1 second of inactivity
 
     return () => clearTimeout(timeoutId);
-  }, [title, handleSave]);
-
-  // Listen to editor content changes
-  useEffect(() => {
-    if (!editor || !document) return;
-
-    const handleUpdate = () => {
-      const timeoutId = setTimeout(() => {
-        handleSave();
-      }, 2000);
-      return () => clearTimeout(timeoutId);
-    };
-
-    editor.on("update", handleUpdate);
-    return () => {
-      editor.off("update", handleUpdate);
-    };
-  }, [editor, handleSave]);
+  }, [title, handleTitleSave]);
 
   if (loading) {
     return (
@@ -164,50 +144,37 @@ export default function DocumentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream text-dark-green">
+    <div className="h-full flex flex-col bg-cream text-dark-green">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-8 py-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => router.push("/")}
-              className="text-dark-green hover:text-primary transition-colors"
-            >
-              ← Back to Home
-            </button>
-
-            <div className="flex items-center space-x-4">
-              {saving && (
-                <span className="text-sm text-gray-500">Saving...</span>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-4">
+      <div className="border-b border-gray-200 px-6 py-4 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
             <Input
               value={title}
               onValueChange={handleTitleChange}
               placeholder="Document title"
-              className="text-2xl font-bold text-dark-green border-none bg-transparent p-0 focus:ring-0"
+              className="text-xl font-bold text-dark-green border-none bg-transparent p-0 focus:ring-0"
               size="lg"
             />
+          </div>
+
+          <div className="flex items-center space-x-4">
+            {saving && <span className="text-sm text-gray-500">Saving...</span>}
           </div>
         </div>
       </div>
 
       {/* Editor */}
-      <div className="p-8">
-        <div className="max-w-4xl mx-auto">
-          <EditorWrapper>
-            <div className="document-content flex flex-col min-h-[11in] h-fit w-full border border-gray-300 flex-1 bg-white">
-              <MenuBar editor={editor} />
-              <EditorContent
-                editor={editor}
-                className="flex-1 overflow-y-auto min-w-[818px] max-w-[818px] w-[818px]"
-              />
-            </div>
-          </EditorWrapper>
-        </div>
+      <div className="flex-1 overflow-hidden p-6">
+        <EditorWrapper>
+          <div className="document-content flex flex-col min-h-[11in] h-fit w-full border border-gray-300 flex-1 bg-white">
+            <MenuBar editor={editor} />
+            <EditorContent
+              editor={editor}
+              className="flex-1 overflow-y-auto min-w-[818px] max-w-[818px] w-[818px] px-4"
+            />
+          </div>
+        </EditorWrapper>
       </div>
     </div>
   );
