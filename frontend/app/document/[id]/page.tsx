@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { DocumentService } from '../../../src/services/documentService';
-import { AgentDocument } from '../../../src/types/document';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { DocumentService } from "../../../src/services/documentService";
+import { AgentDocument } from "../../../src/types/document";
 
 export default function DocumentPage() {
   const [document, setDocument] = useState<AgentDocument | null>(null);
@@ -11,13 +11,13 @@ export default function DocumentPage() {
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const router = useRouter();
-  
+
   const documentId = params.id as string;
 
   useEffect(() => {
     const fetchDocument = async () => {
       if (!documentId) {
-        setError('Invalid document ID');
+        setError("Invalid document ID");
         setLoading(false);
         return;
       }
@@ -26,7 +26,9 @@ export default function DocumentPage() {
         const data = await DocumentService.getDocument(documentId);
         setDocument(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch document');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch document",
+        );
       } finally {
         setLoading(false);
       }
@@ -56,10 +58,10 @@ export default function DocumentPage() {
         <div className="max-w-4xl mx-auto">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <h2 className="font-bold">Error</h2>
-            <p>{error || 'Document not found'}</p>
+            <p>{error || "Document not found"}</p>
           </div>
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="bg-primary text-dark-green px-4 py-2 rounded hover:bg-light-green transition-colors"
           >
             ← Back to Home
@@ -75,24 +77,25 @@ export default function DocumentPage() {
         {/* Header */}
         <div className="mb-8">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push("/")}
             className="text-dark-green hover:text-primary transition-colors mb-4"
           >
             ← Back to Home
           </button>
-          
+
           <h1 className="text-4xl font-bold text-dark-green mb-2">
             {document.title}
           </h1>
-          
+
           {document.created_at && (
             <p className="text-sm text-gray-600">
-              Created: {new Date(document.created_at).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+              Created:{" "}
+              {new Date(document.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
               })}
             </p>
           )}
@@ -109,20 +112,25 @@ export default function DocumentPage() {
 
         {/* Document Info */}
         <div className="mt-8 bg-gray-50 rounded-lg p-4">
-          <h3 className="font-semibold text-dark-green mb-2">Document Details</h3>
+          <h3 className="font-semibold text-dark-green mb-2">
+            Document Details
+          </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium">ID:</span> {document.id}
             </div>
             <div>
-              <span className="font-medium">Title Length:</span> {document.title.length} characters
+              <span className="font-medium">Title Length:</span>{" "}
+              {document.title.length} characters
             </div>
             <div>
-              <span className="font-medium">Content Length:</span> {document.content.length} characters
+              <span className="font-medium">Content Length:</span>{" "}
+              {document.content.length} characters
             </div>
             {document.created_at && (
               <div>
-                <span className="font-medium">Created:</span> {new Date(document.created_at).toISOString()}
+                <span className="font-medium">Created:</span>{" "}
+                {new Date(document.created_at).toISOString()}
               </div>
             )}
           </div>
@@ -130,4 +138,4 @@ export default function DocumentPage() {
       </div>
     </div>
   );
-} 
+}

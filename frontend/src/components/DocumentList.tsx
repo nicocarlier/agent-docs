@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { DocumentService } from '../services/documentService';
-import { AgentDocument } from '../types/document';
+import { useEffect, useState } from "react";
+import { DocumentService } from "../services/documentService";
+import { AgentDocument } from "../types/document";
 
 export default function DocumentList() {
   const [documents, setDocuments] = useState<AgentDocument[]>([]);
@@ -15,7 +15,9 @@ export default function DocumentList() {
         const data = await DocumentService.getDocuments();
         setDocuments(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch documents');
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch documents",
+        );
       } finally {
         setLoading(false);
       }
@@ -54,4 +56,4 @@ export default function DocumentList() {
       )}
     </div>
   );
-} 
+}

@@ -12,4 +12,4 @@ export interface CreateDocumentRequest {
 
 export interface DocumentListResponse {
   documents: AgentDocument[];
-} 
+}
