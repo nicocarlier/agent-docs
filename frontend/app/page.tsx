@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { DocumentService } from "../src/services/documentService";
+import { Button, Spinner } from "@heroui/react";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
@@ -32,13 +33,15 @@ export default function Home() {
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <h1 className="text-4xl font-bold text-dark-green">Agent Docs</h1>
 
-        <button
-          onClick={handleCreateDocument}
-          disabled={loading}
+        <Button
+          color="primary"
+          onPress={handleCreateDocument}
+          isLoading={loading}
+          spinner={<Spinner size="sm" />}
           className="cursor-pointer bg-white !text-cream px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? "Creating..." : "Create Document"}
-        </button>
+          Create Document
+        </Button>
       </main>
     </div>
   );

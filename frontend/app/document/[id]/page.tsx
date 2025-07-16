@@ -1,18 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { EditorContent } from "@tiptap/react";
+import { Input } from "@heroui/react";
 import { DocumentService } from "../../../src/services/documentService";
 import { AgentDocument } from "../../../src/types/document";
+import EditorWrapper from "@/src/components/Editor/EditorWrapper";
+import { useTiptapEditor } from "@/src/hooks/useTiptapEditor";
+import MenuBar from "@/src/components/Editor/MenuBar";
 
 export default function DocumentPage() {
   const [document, setDocument] = useState<AgentDocument | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [title, setTitle] = useState("");
+  const [saving, setSaving] = useState(false);
   const params = useParams();
   const router = useRouter();
-
   const documentId = params.id as string;
+  const editor = useTiptapEditor({
+    documentId,
+    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN,
+  });
 
   useEffect(() => {
     const fetchDocument = async () => {
@@ -25,6 +35,12 @@ export default function DocumentPage() {
       try {
         const data = await DocumentService.getDocument(documentId);
         setDocument(data);
+        setTitle(data.title);
+
+        // Set the editor content if editor is ready
+        if (editor && data.content) {
+          editor.commands.setContent(data.content);
+        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch document",
@@ -35,7 +51,51 @@ export default function DocumentPage() {
     };
 
     fetchDocument();
-  }, [documentId]);
+  }, [documentId, editor]);
+
+  // Update editor content when document is loaded
+  useEffect(() => {
+    if (editor && document?.content) {
+      editor.commands.setContent(document.content);
+    }
+  }, [editor, document]);
+
+  const handleTitleChange = (value: string) => {
+    setTitle(value);
+  };
+
+  const handleTitleSave = useCallback(async () => {
+    if (!document || !document.id || title === document.title) return;
+
+    setSaving(true);
+    try {
+      await DocumentService.updateDocument(document.id, {
+        title,
+        content: document.content, // Keep existing content from database
+      });
+
+      // Update local document state
+      setDocument({
+        ...document,
+        title,
+      });
+    } catch (err) {
+      console.error("Failed to save title:", err);
+    } finally {
+      setSaving(false);
+    }
+  }, [document, title]);
+
+  // Save title when it changes (debounced)
+  useEffect(() => {
+    if (!document) return;
+
+    const timeoutId = setTimeout(() => {
+      handleTitleSave();
+    }, 1000); // Save title after 1 second of inactivity
+
+    return () => clearTimeout(timeoutId);
+  }, [title, handleTitleSave, document]);
 
   if (loading) {
     return (
@@ -71,70 +131,50 @@ export default function DocumentPage() {
     );
   }
 
+  if (!editor) {
+    return (
+      <div className="min-h-screen bg-cream text-dark-green p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center justify-center h-64">
+            <div className="text-gray-500">Loading editor...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-cream text-dark-green p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <button
-            onClick={() => router.push("/")}
-            className="text-dark-green hover:text-primary transition-colors mb-4"
-          >
-            ← Back to Home
-          </button>
+    <div className="h-full flex flex-col bg-cream text-dark-green">
+      {/* Header */}
+      <div className="border-b border-gray-200 px-6 py-4 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Input
+              value={title}
+              onValueChange={handleTitleChange}
+              placeholder="Document title"
+              className="text-xl font-bold text-dark-green border-none bg-transparent p-0 focus:ring-0"
+              size="lg"
+            />
+          </div>
 
-          <h1 className="text-4xl font-bold text-dark-green mb-2">
-            {document.title}
-          </h1>
-
-          {document.created_at && (
-            <p className="text-sm text-gray-600">
-              Created:{" "}
-              {new Date(document.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-            </p>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <div className="prose max-w-none">
-            <div className="whitespace-pre-wrap text-dark-green">
-              {document.content}
-            </div>
+          <div className="flex items-center space-x-4">
+            {saving && <span className="text-sm text-gray-500">Saving...</span>}
           </div>
         </div>
+      </div>
 
-        {/* Document Info */}
-        <div className="mt-8 bg-gray-50 rounded-lg p-4">
-          <h3 className="font-semibold text-dark-green mb-2">
-            Document Details
-          </h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="font-medium">ID:</span> {document.id}
-            </div>
-            <div>
-              <span className="font-medium">Title Length:</span>{" "}
-              {document.title.length} characters
-            </div>
-            <div>
-              <span className="font-medium">Content Length:</span>{" "}
-              {document.content.length} characters
-            </div>
-            {document.created_at && (
-              <div>
-                <span className="font-medium">Created:</span>{" "}
-                {new Date(document.created_at).toISOString()}
-              </div>
-            )}
+      {/* Editor */}
+      <div className="flex-1 overflow-hidden p-6">
+        <EditorWrapper>
+          <div className="document-content flex flex-col min-h-[11in] h-fit w-full border border-gray-300 flex-1 bg-white">
+            <MenuBar editor={editor} />
+            <EditorContent
+              editor={editor}
+              className="flex-1 overflow-y-auto min-w-[818px] max-w-[818px] w-[818px] px-4"
+            />
           </div>
-        </div>
+        </EditorWrapper>
       </div>
     </div>
   );

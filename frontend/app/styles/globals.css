@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./partials/tiptap.scss";
 
 :root {
   --background: #f0efe7;
