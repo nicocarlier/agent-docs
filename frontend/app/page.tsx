@@ -37,7 +37,7 @@ export default function Home() {
         <button
           onClick={handleCreateDocument}
           disabled={loading}
-          className="cursor-pointer !bg-light-green !text-cream px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-white !text-cream px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? 'Creating...' : 'Create Document'}
         </button>
