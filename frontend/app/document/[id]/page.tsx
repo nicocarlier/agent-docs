@@ -18,9 +18,11 @@ export default function DocumentPage() {
   const [saving, setSaving] = useState(false);
   const params = useParams();
   const router = useRouter();
-  const editor = useTiptapEditor();
-
   const documentId = params.id as string;
+  const editor = useTiptapEditor({
+    documentId,
+    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN,
+  });
 
   useEffect(() => {
     const fetchDocument = async () => {
