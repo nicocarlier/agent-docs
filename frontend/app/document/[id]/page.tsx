@@ -14,6 +14,10 @@ export default function DocumentPage() {
 
   const documentId = params.id as string;
 
+  console.log("documentId", documentId);
+
+  console.log("document", document);
+
   useEffect(() => {
     const fetchDocument = async () => {
       if (!documentId) {

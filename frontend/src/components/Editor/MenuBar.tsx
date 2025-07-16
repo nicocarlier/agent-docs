@@ -1,12 +1,8 @@
 "use client";
 
-import { TextStyleKit } from "@tiptap/extension-text-style";
 import type { Editor } from "@tiptap/react";
-import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
+import { useEditorState } from "@tiptap/react";
 import React from "react";
-
-const extensions = [TextStyleKit, StarterKit];
 
 function MenuBar({ editor }: { editor: Editor }) {
   // Read the current editor's state, and re-render the component when it changes
@@ -180,53 +176,4 @@ function MenuBar({ editor }: { editor: Editor }) {
   );
 }
 
-export default () => {
-  const editor = useEditor({
-    extensions,
-    immediatelyRender: false, // Fix for SSR hydration issues
-    content: `
-<h2>
-  Welcome to Agent Docs
-</h2>
-<p>
-  This is a <em>powerful</em> document editor built with <strong>TipTap</strong>. You can edit this content and use all the formatting options in the toolbar above.
-</p>
-<ul>
-  <li>
-    Create bullet lists like this one
-  </li>
-  <li>
-    Add multiple items to your lists
-  </li>
-</ul>
-<p>
-  Try creating a code block:
-</p>
-<pre><code class="language-javascript">function hello() {
-  console.log("Hello, world!");
-}</code></pre>
-<p>
-  You can also add blockquotes for important information:
-</p>
-<blockquote>
-  This is a blockquote. Use it to highlight important information or quotes.
-</blockquote>
-<p>
-  Start typing to edit this document!
-</p>
-`,
-    editable: true,
-    autofocus: true,
-  });
-
-  if (!editor) {
-    return null;
-  }
-
-  return (
-    <div className="tiptap-editor">
-      <MenuBar editor={editor} />
-      <EditorContent editor={editor} className="tiptap" />
-    </div>
-  );
-};
+export default MenuBar;
