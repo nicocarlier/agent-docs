@@ -17,6 +17,7 @@ export default function DocumentPage() {
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const params = useParams();
   const router = useRouter();
   const { getAuthToken } = useAuthToken();
@@ -54,17 +55,28 @@ export default function DocumentPage() {
   // Update editor content when document is loaded and editor is ready
   useEffect(() => {
     if (editor && document?.content) {
-      editor.commands.setContent(document.content);
+      // Only set content once when document is first loaded
+      const currentContent = editor.getHTML();
+      if (currentContent === "<p></p>" || currentContent === "") {
+        editor.commands.setContent(document.content);
+      }
     }
-  }, [editor, document?.content]);
+  }, [editor, document?.id, document?.content]); // Include content to satisfy exhaustive-deps
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
   };
 
   const handleTitleSave = useCallback(async () => {
-    if (!document || !document.id || title === document.title) return;
+    if (
+      !document ||
+      !document.id ||
+      title === document.title ||
+      savingRef.current
+    )
+      return;
 
+    savingRef.current = true;
     setSaving(true);
     try {
       const token = await getAuthToken();
@@ -78,27 +90,32 @@ export default function DocumentPage() {
       );
 
       // Update local document state
-      setDocument({
-        ...document,
-        title,
-      });
+      setDocument((prev) =>
+        prev
+          ? {
+              ...prev,
+              title,
+            }
+          : null,
+      );
     } catch (err) {
       console.error("Failed to save title:", err);
     } finally {
       setSaving(false);
+      savingRef.current = false;
     }
   }, [document, title, getAuthToken]);
 
   // Save title when it changes (debounced)
   useEffect(() => {
-    if (!document) return;
+    if (!document?.id) return;
 
     const timeoutId = setTimeout(() => {
       handleTitleSave();
     }, 1000); // Save title after 1 second of inactivity
 
     return () => clearTimeout(timeoutId);
-  }, [title, handleTitleSave, document]);
+  }, [title, handleTitleSave, document?.id]); // Only depend on document ID, not the full document object
 
   if (loading) {
     return (

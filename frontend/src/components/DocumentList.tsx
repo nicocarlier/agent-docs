@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Spinner } from "@heroui/react";
 import { DocumentService } from "../services/documentService";
 import { AgentDocument } from "../types/document";
 import { useAuthToken } from "../hooks/useAuth";
@@ -57,7 +56,7 @@ export default function DocumentList() {
   // Fetch documents on mount
   useEffect(() => {
     fetchDocuments();
-  }, []);
+  }, [getAuthToken]);
 
   // Show welcome page for empty state
   if (!loading && documents.length === 0) {

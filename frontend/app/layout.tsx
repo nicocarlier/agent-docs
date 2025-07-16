@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Providers from "./providers";
 import "./styles/globals.css";
 import { Button } from "@heroui/react";
@@ -34,9 +28,6 @@ export default function RootLayout({
                     href="/"
                     className="flex items-center space-x-2 text-gray-900 hover:text-green-600 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-                      <span className="text-white font-bold text-sm">AD</span>
-                    </div>
                     <span className="font-bold text-lg">Agent Docs</span>
                   </Link>
                   <UserButton />

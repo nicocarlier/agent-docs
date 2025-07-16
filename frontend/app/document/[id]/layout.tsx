@@ -34,7 +34,7 @@ export default function DocumentLayout({
     };
 
     fetchDocuments();
-  }, [getAuthToken]);
+  }, [getAuthToken]); // Include getAuthToken to satisfy exhaustive-deps
 
   const handleCreateDocument = async () => {
     try {
