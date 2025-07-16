@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { EditorContent } from "@tiptap/react";
 import { Input } from "@heroui/react";
@@ -23,7 +23,7 @@ export default function DocumentPage() {
   const documentId = params.id as string;
   const editor = useTiptapEditor({
     documentId,
-    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN,
+    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN || undefined,
   });
 
   useEffect(() => {
@@ -39,11 +39,6 @@ export default function DocumentPage() {
         const data = await DocumentService.getDocument(documentId, token);
         setDocument(data);
         setTitle(data.title);
-
-        // Set the editor content if editor is ready
-        if (editor && data.content) {
-          editor.commands.setContent(data.content);
-        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch document",
@@ -54,14 +49,14 @@ export default function DocumentPage() {
     };
 
     fetchDocument();
-  }, [documentId, editor, getAuthToken]);
+  }, [documentId, getAuthToken]);
 
-  // Update editor content when document is loaded
+  // Update editor content when document is loaded and editor is ready
   useEffect(() => {
     if (editor && document?.content) {
       editor.commands.setContent(document.content);
     }
-  }, [editor, document]);
+  }, [editor, document?.content]);
 
   const handleTitleChange = (value: string) => {
     setTitle(value);

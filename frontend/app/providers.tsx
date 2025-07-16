@@ -1,6 +1,6 @@
 import { HeroUIProvider } from "@heroui/react";
 import { ToastProvider } from "@heroui/toast";
-import { ClerkProvider, SignInButton } from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 
 const geistSans = Geist({
@@ -18,11 +18,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <ClerkProvider>
       <HeroUIProvider>
         <ToastProvider placement="bottom-right" toastOffset={10} />
-        <body
+        <div
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           {children}
-        </body>
+        </div>
       </HeroUIProvider>
     </ClerkProvider>
   );
