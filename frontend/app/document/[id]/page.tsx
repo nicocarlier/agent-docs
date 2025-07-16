@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { EditorContent } from "@tiptap/react";
 import { Input } from "@heroui/react";
@@ -9,6 +9,7 @@ import { AgentDocument } from "../../../src/types/document";
 import EditorWrapper from "@/src/components/Editor/EditorWrapper";
 import { useTiptapEditor } from "@/src/hooks/useTiptapEditor";
 import MenuBar from "@/src/components/Editor/MenuBar";
+import { useAuthToken } from "@/src/hooks/useAuth";
 
 export default function DocumentPage() {
   const [document, setDocument] = useState<AgentDocument | null>(null);
@@ -16,12 +17,14 @@ export default function DocumentPage() {
   const [error, setError] = useState<string | null>(null);
   const [title, setTitle] = useState("");
   const [saving, setSaving] = useState(false);
+  const savingRef = useRef(false);
   const params = useParams();
   const router = useRouter();
+  const { getAuthToken } = useAuthToken();
   const documentId = params.id as string;
   const editor = useTiptapEditor({
     documentId,
-    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN,
+    token: process.env.NEXT_PUBLIC_TIPTAP_COLLAB_TOKEN || undefined,
   });
 
   useEffect(() => {
@@ -33,14 +36,10 @@ export default function DocumentPage() {
       }
 
       try {
-        const data = await DocumentService.getDocument(documentId);
+        const token = await getAuthToken();
+        const data = await DocumentService.getDocument(documentId, token);
         setDocument(data);
         setTitle(data.title);
-
-        // Set the editor content if editor is ready
-        if (editor && data.content) {
-          editor.commands.setContent(data.content);
-        }
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "Failed to fetch document",
@@ -51,55 +50,76 @@ export default function DocumentPage() {
     };
 
     fetchDocument();
-  }, [documentId, editor]);
+  }, [documentId, getAuthToken]);
 
-  // Update editor content when document is loaded
+  // Update editor content when document is loaded and editor is ready
   useEffect(() => {
     if (editor && document?.content) {
-      editor.commands.setContent(document.content);
+      // Only set content once when document is first loaded
+      const currentContent = editor.getHTML();
+      if (currentContent === "<p></p>" || currentContent === "") {
+        editor.commands.setContent(document.content);
+      }
     }
-  }, [editor, document]);
+  }, [editor, document?.id, document?.content]); // Include content to satisfy exhaustive-deps
 
   const handleTitleChange = (value: string) => {
     setTitle(value);
   };
 
   const handleTitleSave = useCallback(async () => {
-    if (!document || !document.id || title === document.title) return;
+    if (
+      !document ||
+      !document.id ||
+      title === document.title ||
+      savingRef.current
+    )
+      return;
 
+    savingRef.current = true;
     setSaving(true);
     try {
-      await DocumentService.updateDocument(document.id, {
-        title,
-        content: document.content, // Keep existing content from database
-      });
+      const token = await getAuthToken();
+      await DocumentService.updateDocument(
+        document.id,
+        {
+          title,
+          content: document.content, // Keep existing content from database
+        },
+        token,
+      );
 
       // Update local document state
-      setDocument({
-        ...document,
-        title,
-      });
+      setDocument((prev) =>
+        prev
+          ? {
+              ...prev,
+              title,
+            }
+          : null,
+      );
     } catch (err) {
       console.error("Failed to save title:", err);
     } finally {
       setSaving(false);
+      savingRef.current = false;
     }
-  }, [document, title]);
+  }, [document, title, getAuthToken]);
 
   // Save title when it changes (debounced)
   useEffect(() => {
-    if (!document) return;
+    if (!document?.id) return;
 
     const timeoutId = setTimeout(() => {
       handleTitleSave();
     }, 1000); // Save title after 1 second of inactivity
 
     return () => clearTimeout(timeoutId);
-  }, [title, handleTitleSave, document]);
+  }, [title, handleTitleSave, document?.id]); // Only depend on document ID, not the full document object
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 rounded w-1/3 mb-4"></div>
@@ -114,7 +134,7 @@ export default function DocumentPage() {
 
   if (error || !document) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <h2 className="font-bold">Error</h2>
@@ -122,7 +142,7 @@ export default function DocumentPage() {
           </div>
           <button
             onClick={() => router.push("/")}
-            className="bg-primary text-dark-green px-4 py-2 rounded hover:bg-light-green transition-colors"
+            className="bg-green-400 text-gray-900 px-4 py-2 rounded hover:bg-green-500 transition-colors"
           >
             ← Back to Home
           </button>
@@ -133,7 +153,7 @@ export default function DocumentPage() {
 
   if (!editor) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-gray-500">Loading editor...</div>
@@ -144,7 +164,7 @@ export default function DocumentPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-cream text-dark-green">
+    <div className="h-full flex flex-col bg-gray-50 text-gray-900">
       {/* Header */}
       <div className="border-b border-gray-200 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -153,7 +173,7 @@ export default function DocumentPage() {
               value={title}
               onValueChange={handleTitleChange}
               placeholder="Document title"
-              className="text-xl font-bold text-dark-green border-none bg-transparent p-0 focus:ring-0"
+              className="text-xl font-bold text-gray-900 border-none bg-transparent p-0 focus:ring-0"
               size="lg"
             />
           </div>

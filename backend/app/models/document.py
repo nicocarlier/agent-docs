@@ -12,6 +12,7 @@ class Document(SQLModel, table=True):
         default_factory=lambda: str(uuid4()),
         sa_column=Column(UUID(as_uuid=False), primary_key=True),
     )
+    user_id: str = Field(index=True)  # Clerk user ID
     title: str
     content: str
     created_at: datetime = Field(

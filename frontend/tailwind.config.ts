@@ -10,19 +10,15 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Original CSS variables
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-
         // Custom color scheme
-        cream: "#F0EFE7", // Main background
-        "dark-green": "#20310C", // Text and navbar
-        "light-green": "#65D87E", // Buttons and CTAs
+        cream: "#F0EFE7",
+        "dark-green": "#20310C",
+        "light-green": "#65D87E",
 
         // Semantic aliases
-        primary: "#65D87E", // Light green for primary actions
-        secondary: "#20310C", // Dark green for secondary elements
-        surface: "#F0EFE7", // Cream for backgrounds
+        primary: "#65D87E",
+        secondary: "#20310C",
+        surface: "#F0EFE7",
       },
     },
   },
