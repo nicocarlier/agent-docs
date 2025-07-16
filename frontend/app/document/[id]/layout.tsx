@@ -83,7 +83,7 @@ export default function DocumentLayout({
           <Button
             color="primary"
             onPress={handleCreateDocument}
-            className="w-full bg-dark-green text-white hover:bg-primary"
+            className="w-full bg-dark-green !text-black hover:bg-primary"
             size={sidebarOpen ? "md" : "sm"}
           >
             {sidebarOpen ? "Create Document" : "+"}
