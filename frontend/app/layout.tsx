@@ -32,9 +32,9 @@ export default function RootLayout({
                 <div className="flex items-center justify-between">
                   <Link
                     href="/"
-                    className="flex items-center space-x-2 text-dark-green hover:text-primary transition-colors"
+                    className="flex items-center space-x-2 text-gray-900 hover:text-green-600 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-dark-green rounded-lg flex items-center justify-center">
+                    <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
                       <span className="text-white font-bold text-sm">AD</span>
                     </div>
                     <span className="font-bold text-lg">Agent Docs</span>
@@ -49,7 +49,7 @@ export default function RootLayout({
               <header className="bg-white border-b border-gray-200 px-6 py-3 flex-shrink-0">
                 <div className="max-w-7xl mx-auto flex items-center justify-between">
                   <div className="flex items-center space-x-2">
-                    <span className="text-xl font-bold text-dark-green">
+                    <span className="text-xl font-bold text-gray-900">
                       Agent Docs
                     </span>
                   </div>
@@ -57,7 +57,7 @@ export default function RootLayout({
                     <SignInButton mode="modal">
                       <Button
                         variant="light"
-                        className="text-dark-green hover:bg-light-green"
+                        className="text-gray-900 hover:bg-green-400"
                       >
                         Get Started
                       </Button>

@@ -7,6 +7,7 @@ import { DocumentService } from "../services/documentService";
 import { AgentDocument } from "../types/document";
 import { useAuthToken } from "../hooks/useAuth";
 import WelcomePage from "./WelcomePage";
+import MainButton from "./common/MainButton";
 
 export default function DocumentList() {
   const [documents, setDocuments] = useState<AgentDocument[]>([]);
@@ -64,19 +65,16 @@ export default function DocumentList() {
   }
 
   return (
-    <div className="p-8 bg-cream min-h-screen">
+    <div className="p-8 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold text-dark-green">Your Documents</h1>
-          <Button
-            color="primary"
-            onPress={handleCreateDocument}
+          <h1 className="text-3xl font-bold text-gray-900">Your Documents</h1>
+          <MainButton
+            title="Create Document"
+            handleEvent={handleCreateDocument}
             isLoading={creating}
-            spinner={<Spinner size="sm" />}
-            className="bg-dark-green text-white hover:bg-primary font-semibold"
-          >
-            Create Document
-          </Button>
+            type="primary"
+          />
         </div>
 
         {loading ? (
@@ -100,7 +98,7 @@ export default function DocumentList() {
                 onClick={() => doc.id && handleDocumentSelect(doc.id)}
                 className="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-gray-200"
               >
-                <h3 className="font-semibold text-dark-green mb-2 truncate">
+                <h3 className="font-semibold text-gray-900 mb-2 truncate">
                   {doc.title}
                 </h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">

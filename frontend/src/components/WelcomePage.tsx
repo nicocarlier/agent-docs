@@ -34,10 +34,10 @@ export default function WelcomePage() {
   };
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-cream text-dark-green">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-50 text-gray-900">
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <div className="text-center sm:text-left">
-          <h1 className="text-4xl font-bold text-dark-green mb-4">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Welcome to Agent Docs
           </h1>
           <p className="text-lg text-gray-600 mb-8">
@@ -51,7 +51,7 @@ export default function WelcomePage() {
           onPress={handleCreateDocument}
           isLoading={loading}
           spinner={<Spinner size="sm" />}
-          className="cursor-pointer !bg-dark-green text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary"
+          className="cursor-pointer !bg-black text-white px-6 py-3 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:!bg-gray-800"
         >
           Create Your First Document
         </Button>

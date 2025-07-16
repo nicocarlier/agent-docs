@@ -1,9 +1,10 @@
 import { useAuth } from "@clerk/nextjs";
+import { useCallback } from "react";
 
 export const useAuthToken = () => {
   const { getToken } = useAuth();
 
-  const getAuthToken = async (): Promise<string | null> => {
+  const getAuthToken = useCallback(async (): Promise<string | null> => {
     try {
       const token = await getToken();
       return token;
@@ -11,7 +12,7 @@ export const useAuthToken = () => {
       console.error("Failed to get auth token:", error);
       return null;
     }
-  };
+  }, [getToken]);
 
   return { getAuthToken };
 };

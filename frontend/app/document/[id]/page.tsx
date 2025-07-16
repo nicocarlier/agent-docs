@@ -102,7 +102,7 @@ export default function DocumentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-300 rounded w-1/3 mb-4"></div>
@@ -117,7 +117,7 @@ export default function DocumentPage() {
 
   if (error || !document) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             <h2 className="font-bold">Error</h2>
@@ -125,7 +125,7 @@ export default function DocumentPage() {
           </div>
           <button
             onClick={() => router.push("/")}
-            className="bg-primary text-dark-green px-4 py-2 rounded hover:bg-light-green transition-colors"
+            className="bg-green-400 text-gray-900 px-4 py-2 rounded hover:bg-green-500 transition-colors"
           >
             ← Back to Home
           </button>
@@ -136,7 +136,7 @@ export default function DocumentPage() {
 
   if (!editor) {
     return (
-      <div className="min-h-screen bg-cream text-dark-green p-8">
+      <div className="min-h-screen bg-gray-50 text-gray-900 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-center h-64">
             <div className="text-gray-500">Loading editor...</div>
@@ -147,7 +147,7 @@ export default function DocumentPage() {
   }
 
   return (
-    <div className="h-full flex flex-col bg-cream text-dark-green">
+    <div className="h-full flex flex-col bg-gray-50 text-gray-900">
       {/* Header */}
       <div className="border-b border-gray-200 px-6 py-4 flex-shrink-0">
         <div className="flex items-center justify-between">
@@ -156,7 +156,7 @@ export default function DocumentPage() {
               value={title}
               onValueChange={handleTitleChange}
               placeholder="Document title"
-              className="text-xl font-bold text-dark-green border-none bg-transparent p-0 focus:ring-0"
+              className="text-xl font-bold text-gray-900 border-none bg-transparent p-0 focus:ring-0"
               size="lg"
             />
           </div>
